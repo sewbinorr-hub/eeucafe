@@ -195,12 +195,19 @@ The app automatically detects which meal period is currently active:
 
 3. Set environment variable: `VITE_API_URL` to your backend URL
 
-### Backend (Render/Railway/Heroku)
+### Backend (Railway/Render - Required for Production)
 
-1. Set environment variables in your hosting platform
-2. Deploy the `backend` folder
-3. The SQLite database file will be created automatically
-4. For production, consider backing up the `data/eeu-cafe.db` file regularly
+**⚠️ Important:** Vercel is frontend-only. You MUST deploy backend separately!
+
+**Recommended: Railway** (easiest, free tier available)
+1. Sign up at [railway.app](https://railway.app)
+2. Deploy from GitHub, set root directory to `backend`
+3. Set environment variables (see [RAILWAY_DEPLOYMENT.md](./RAILWAY_DEPLOYMENT.md))
+4. Get your backend URL
+5. Update Vercel `VITE_API_URL` to point to Railway backend
+
+**See:** [RAILWAY_DEPLOYMENT.md](./RAILWAY_DEPLOYMENT.md) for detailed steps  
+**See:** [VERCEL_SQLITE_DEPLOYMENT.md](./VERCEL_SQLITE_DEPLOYMENT.md) for why and alternatives
 
 ### Database (SQLite)
 
@@ -208,6 +215,7 @@ The app automatically detects which meal period is currently active:
 - Database file location: `backend/data/eeu-cafe.db` (created on first run)
 - **Backup**: Simply copy the `.db` file to backup your data
 - **Why SQLite?** Perfect for daily-changing menu data - simple, fast, reliable, and no separate server needed
+- **Production:** Railway/Render provide persistent storage for SQLite database
 
 ## License
 
