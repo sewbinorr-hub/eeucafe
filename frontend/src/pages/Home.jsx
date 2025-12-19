@@ -101,9 +101,9 @@ export default function Home() {
       if (dayOfWeek === 0) {
         return '🔒 Closed (Sunday)'
       }
-      // Saturday - closed after 12:00 PM
+      // Saturday - closed after 12:00 PM (service ends at 12:00 PM)
       if (dayOfWeek === 6 && currentTimeMinutes >= 12 * 60) {
-        return '🔒 Closed (Saturday - Half Day)'
+        return '🔒 Closed (Saturday - Service ended at 12:00 PM)'
       }
       return '⏸️ Not Currently Serving'
     }
@@ -127,14 +127,14 @@ export default function Home() {
       return 'Monday 8:00 AM (Morning Meal)'
     }
 
-    // Saturday is half day - only morning meal and morning tea
+    // Saturday is half day - only morning meal and morning tea, service until 12:00 PM
     if (dayOfWeek === 6) {
       if (currentTimeMinutes < 8 * 60) {
         return '8:00 AM (Morning Meal)'
       } else if (currentTimeMinutes >= 8 * 60 + 15 && currentTimeMinutes < 10 * 60) {
         return '10:00 AM (Morning Tea/Coffee)'
       } else if (currentTimeMinutes >= 10 * 60 + 15 && currentTimeMinutes < 12 * 60) {
-        return 'Closed at 12:00 PM (Half Day)'
+        return 'Service ends at 12:00 PM (Saturday Half Day)'
       } else {
         // After 12:00 PM on Saturday
         return 'Monday 8:00 AM (Morning Meal)'
@@ -151,8 +151,14 @@ export default function Home() {
     } else if (currentTimeMinutes >= 13 * 60 + 30 && currentTimeMinutes < 15 * 60) {
       return '3:00 PM (Afternoon Coffee)'
     } else if (currentTimeMinutes >= 15 * 60 + 15) {
-      const nextDay = dayOfWeek === 5 ? 'Monday' : 'Tomorrow'
-      return `${nextDay} 8:00 AM (Morning Meal)`
+      // After last service - check if it's Friday (next is Saturday half day) or other days
+      if (dayOfWeek === 5) {
+        // Friday - next is Saturday (half day)
+        return 'Saturday 8:00 AM (Morning Meal - Half Day)'
+      } else {
+        // Monday-Thursday - next is tomorrow
+        return 'Tomorrow 8:00 AM (Morning Meal)'
+      }
     }
     return null
   }
@@ -160,6 +166,24 @@ export default function Home() {
   const currentSlot = getCurrentTimeSlot()
   const statusText = getStatusText(currentSlot)
   const nextServing = getNextServingTime()
+  
+  // Check if it's Saturday between 10:15 AM and 12:00 PM (service ending, not next serving)
+  const isSaturdayServiceEnding = () => {
+    const dayOfWeek = currentTime.getDay()
+    const hours = currentTime.getHours()
+    const minutes = currentTime.getMinutes()
+    const currentTimeMinutes = hours * 60 + minutes
+    return dayOfWeek === 6 && currentTimeMinutes >= 10 * 60 + 15 && currentTimeMinutes < 12 * 60
+  }
+  
+  // Check if it's Saturday after 12:00 PM (closed for weekend)
+  const isSaturdayAfterClose = () => {
+    const dayOfWeek = currentTime.getDay()
+    const hours = currentTime.getHours()
+    const minutes = currentTime.getMinutes()
+    const currentTimeMinutes = hours * 60 + minutes
+    return dayOfWeek === 6 && currentTimeMinutes >= 12 * 60
+  }
 
   // Check and send notifications when serving time starts
   useEffect(() => {
@@ -245,9 +269,18 @@ export default function Home() {
                     {currentSlot ? 'Now Serving' : 'Status'}
                   </span>
                   <span className="text-xl font-bold text-white">{statusText}</span>
-                  {!currentSlot && nextServing && (
+                  {!currentSlot && nextServing && !isSaturdayAfterClose() && (
                     <span className="text-xs text-gray-400 mt-1">
-                      Next: <span className="text-primary-green">{nextServing}</span>
+                      {isSaturdayServiceEnding() ? (
+                        <span>Service ends: <span className="text-accent-orange">{nextServing}</span></span>
+                      ) : (
+                        <span>Next: <span className="text-primary-green">{nextServing}</span></span>
+                      )}
+                    </span>
+                  )}
+                  {isSaturdayAfterClose() && (
+                    <span className="text-xs text-gray-400 mt-1">
+                      Back: <span className="text-gray-300">Monday 8:00 AM</span>
                     </span>
                   )}
                 </div>
@@ -339,21 +372,48 @@ export default function Home() {
                               : 'We are currently closed. Please check back during our serving hours.'}
                           </p>
                           
-                          {/* Next Serving Time */}
-                          {nextServing && (
+                          {/* Next Serving Time / Service Ending */}
+                          {nextServing && !isSaturdayAfterClose() && (
                             <motion.div
-                              className="w-full p-4 rounded-xl bg-gradient-to-r from-primary-green/10 via-accent-orange/10 to-primary-green/10 border border-primary-green/20"
+                              className={`w-full p-4 rounded-xl border ${
+                                isSaturdayServiceEnding()
+                                  ? 'bg-gradient-to-r from-accent-orange/10 via-accent-orange/10 to-accent-orange/10 border-accent-orange/20'
+                                  : 'bg-gradient-to-r from-primary-green/10 via-accent-orange/10 to-primary-green/10 border-primary-green/20'
+                              }`}
                               initial={{ opacity: 0, scale: 0.95 }}
                               animate={{ opacity: 1, scale: 1 }}
                               transition={{ delay: 0.3 }}
                             >
                               <div className="flex items-center justify-center gap-2 mb-2">
-                                <span className="text-primary-green text-lg">⏰</span>
-                                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Next Serving</span>
+                                <span className={`text-lg ${isSaturdayServiceEnding() ? 'text-accent-orange' : 'text-primary-green'}`}>
+                                  {isSaturdayServiceEnding() ? '🕐' : '⏰'}
+                                </span>
+                                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                                  {isSaturdayServiceEnding() ? 'Service Ends' : 'Next Serving'}
+                                </span>
                               </div>
-                              <p className="text-lg font-bold text-primary-green">
+                              <p className={`text-lg font-bold ${isSaturdayServiceEnding() ? 'text-accent-orange' : 'text-primary-green'}`}>
                                 {nextServing}
                               </p>
+                            </motion.div>
+                          )}
+                          
+                          {/* Weekend message for Saturday after 12:00 PM */}
+                          {isSaturdayAfterClose() && (
+                            <motion.div
+                              className="w-full p-4 rounded-xl bg-gradient-to-r from-gray-700/20 via-gray-600/20 to-gray-700/20 border border-gray-600/20"
+                              initial={{ opacity: 0, scale: 0.95 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: 0.3 }}
+                            >
+                              <div className="flex items-center justify-center gap-2 mb-2">
+                                <span className="text-gray-400 text-lg">📅</span>
+                                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">We'll Be Back</span>
+                              </div>
+                              <p className="text-lg font-bold text-gray-300">
+                                Monday 8:00 AM
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">Have a great weekend!</p>
                             </motion.div>
                           )}
                           
