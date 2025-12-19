@@ -1,14 +1,20 @@
 import { supabase } from './supabase.js'
 
-const ADMIN_KEY = import.meta.env.VITE_ADMIN_KEY || ''
+const ADMIN_KEY = import.meta.env.VITE_ADMIN_KEY || 'your-secret-admin-key-change-this'
 
 // Validate admin key
 const validateAdminKey = (adminKey) => {
   if (!adminKey || !adminKey.trim()) {
-    throw new Error('Admin key is required')
+    throw new Error('Admin key is required. Please enter your admin key.')
   }
+  
+  // Check if admin key is configured
+  if (!ADMIN_KEY || ADMIN_KEY === 'your-secret-admin-key-change-this' || ADMIN_KEY.trim() === '') {
+    console.warn('⚠️ VITE_ADMIN_KEY not set! Using default key. Set VITE_ADMIN_KEY in .env for production.')
+  }
+  
   if (adminKey.trim() !== ADMIN_KEY.trim()) {
-    throw new Error('Invalid admin key')
+    throw new Error('Invalid admin key. Please check your admin key and try again.')
   }
 }
 
