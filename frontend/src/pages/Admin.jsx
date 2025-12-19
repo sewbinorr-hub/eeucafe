@@ -117,13 +117,8 @@ export default function Admin() {
 
     try {
       const result = await uploadImage(file, adminKey)
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
-      const baseUrl = API_BASE_URL.replace('/api', '')
-      // If imageUrl already includes the full URL, use it as is, otherwise prepend baseUrl
-      const imageUrl = result.imageUrl.startsWith('http') 
-        ? result.imageUrl 
-        : `${baseUrl}${result.imageUrl}`
-      handleFoodChange(slotKey, index, 'image', imageUrl)
+      // Supabase returns full public URL, use it directly
+      handleFoodChange(slotKey, index, 'image', result.imageUrl)
     } catch (error) {
       alert('Error uploading image: ' + error.message)
     }
@@ -341,13 +336,13 @@ export default function Admin() {
                   <div className="min-w-0">
                     <h4 className="text-red-400 font-bold text-xs sm:text-sm mb-1">Database Connection Issue</h4>
                     <p className="text-gray-300 text-xs sm:text-sm leading-relaxed mb-2">
-                      Cannot access SQLite database. Changes cannot be saved until the database is accessible.
+                      Cannot connect to Supabase database. Changes cannot be saved until connection is restored.
                     </p>
                     <ul className="text-xs text-gray-400 space-y-1 list-disc list-inside">
-                      <li>Check if the backend server is running</li>
-                      <li>Verify the database file exists at backend/data/eeu-cafe.db</li>
-                      <li>Ensure the backend has write permissions for the data directory</li>
-                      <li>Check backend server logs for detailed error messages</li>
+                      <li>Check your Supabase project is active</li>
+                      <li>Verify VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set correctly</li>
+                      <li>Ensure the menus table exists in your Supabase database</li>
+                      <li>Check browser console for detailed error messages</li>
                     </ul>
                   </div>
                 </div>
