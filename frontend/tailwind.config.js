@@ -15,6 +15,15 @@ export default {
         'gray-border': '#D9D9D9',
         'text-gray': '#666666',
         'cyan-highlight': '#00E5FF',
+        // Custom colors from HTML layout
+        'primary': '#36e27b',
+        'primary-dark': '#2ab861',
+        'muted-orange': '#F6A26B',
+        'grassy-green': '#6BBF59',
+        'background-light': '#f6f8f7',
+        'background-dark': '#112117',
+        'surface-dark': '#1c2620',
+        'surface-darker': '#111714',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
