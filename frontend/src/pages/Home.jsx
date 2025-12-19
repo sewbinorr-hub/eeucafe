@@ -34,11 +34,16 @@ export default function Home() {
 
   const loadMenu = async () => {
     try {
+      setLoading(true)
       const today = format(new Date(), 'yyyy-MM-dd')
+      console.log('Loading menu for date:', today)
       const data = await getMenu(today)
+      console.log('Menu loaded:', data)
       setMenu(data)
     } catch (error) {
       console.error('Error loading menu:', error)
+      // Set menu to null so error state is shown
+      setMenu(null)
     } finally {
       setLoading(false)
     }
@@ -241,22 +246,70 @@ export default function Home() {
 
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-text-gray">Loading menu...</p>
+            <p className="text-gray-400">Loading menu...</p>
           </div>
-        ) : menu ? (
+        ) : menu && menu.slots && menu.slots.length > 0 ? (
           (() => {
             // Filter to show only the current serving slot
             const currentSlotData = menu.slots.find(slot => slot.key === currentSlot)
             
-            if (!currentSlotData) {
+            if (!currentSlotData && currentSlot) {
+              // Current slot is active but no menu data for it
               return (
                 <div className="text-center py-12">
                   <p className="text-gray-400 text-lg">
-                    {currentSlot 
-                      ? 'Menu item not found for current time slot.' 
-                      : 'No meal is currently being served.'}
+                    Menu item not found for current time slot.
                   </p>
-                  {!currentSlot && nextServing && (
+                </div>
+              )
+            }
+            
+            if (!currentSlotData) {
+              // Not currently serving - show all upcoming slots
+              const upcomingSlots = menu.slots.filter(slot => {
+                const [hours, minutes] = slot.time.split(':').map(Number)
+                const slotTime = hours * 60 + minutes
+                const currentTimeMinutes = currentTime.getHours() * 60 + currentTime.getMinutes()
+                return slotTime >= currentTimeMinutes
+              })
+              
+              if (upcomingSlots.length > 0) {
+                return (
+                  <div className="space-y-6">
+                    <div className="text-center mb-6">
+                      <p className="text-gray-400 text-lg mb-2">
+                        Currently not serving. Here's today's menu:
+                      </p>
+                      {nextServing && (
+                        <p className="text-gray-500 text-sm">
+                          Next serving: <span className="text-primary-green">{nextServing}</span>
+                        </p>
+                      )}
+                    </div>
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                      {upcomingSlots.map((slot, index) => (
+                        <MenuCard
+                          key={slot.key}
+                          slot={{
+                            ...slot,
+                            foods: normalizeFoods(slot.foods || []),
+                          }}
+                          isCurrent={false}
+                          isPast={false}
+                          delay={index * 0.1}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )
+              }
+              
+              return (
+                <div className="text-center py-12">
+                  <p className="text-gray-400 text-lg">
+                    No meal is currently being served.
+                  </p>
+                  {nextServing && (
                     <p className="text-gray-500 text-sm mt-2">
                       Next serving: <span className="text-primary-green">{nextServing}</span>
                     </p>
@@ -265,6 +318,7 @@ export default function Home() {
               )
             }
             
+            // Show current slot menu
             return (
               <div className="flex justify-center">
                 <div className="w-full max-w-md">
@@ -284,7 +338,8 @@ export default function Home() {
           })()
         ) : (
           <div className="text-center py-12">
-            <p className="text-gray-400">No menu available for today.</p>
+            <p className="text-gray-400 text-lg mb-2">No menu available for today.</p>
+            <p className="text-gray-500 text-sm">Please check back later or contact the admin.</p>
           </div>
         )}
         </div>

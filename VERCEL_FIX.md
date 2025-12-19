@@ -73,3 +73,4 @@ vercel logs
 Once fixed, your app should be accessible at:
 - Production: `https://eeucafe-efjinn7fi-teges-projects.vercel.app`
 - All routes should work (/, /about, /admin)
+

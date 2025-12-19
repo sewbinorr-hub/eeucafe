@@ -214,3 +214,4 @@ If you have existing data in SQLite:
 - [Supabase Docs](https://supabase.com/docs)
 - [Supabase Discord](https://discord.supabase.com)
 - [Supabase GitHub](https://github.com/supabase/supabase)
+

@@ -1,20 +1,14 @@
 import { supabase } from './supabase.js'
 
-const ADMIN_KEY = import.meta.env.VITE_ADMIN_KEY || 'your-secret-admin-key-change-this'
+const ADMIN_KEY = import.meta.env.VITE_ADMIN_KEY || ''
 
 // Validate admin key
 const validateAdminKey = (adminKey) => {
   if (!adminKey || !adminKey.trim()) {
-    throw new Error('Admin key is required. Please enter your admin key.')
+    throw new Error('Admin key is required')
   }
-  
-  // Check if admin key is configured
-  if (!ADMIN_KEY || ADMIN_KEY === 'your-secret-admin-key-change-this' || ADMIN_KEY.trim() === '') {
-    console.warn('⚠️ VITE_ADMIN_KEY not set! Using default key. Set VITE_ADMIN_KEY in .env for production.')
-  }
-  
   if (adminKey.trim() !== ADMIN_KEY.trim()) {
-    throw new Error('Invalid admin key. Please check your admin key and try again.')
+    throw new Error('Invalid admin key')
   }
 }
 
@@ -33,9 +27,14 @@ export const getMenu = async (date) => {
       .eq('date', date)
       .single()
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 = not found
-      console.error('Error fetching menu:', error)
-      throw new Error('Failed to fetch menu from database')
+    if (error) {
+      // PGRST116 = not found (this is expected if no menu exists)
+      if (error.code === 'PGRST116') {
+        console.log(`No menu found for date ${date}, using default menu`)
+      } else {
+        console.error('Error fetching menu from Supabase:', error)
+        throw new Error(`Failed to fetch menu from database: ${error.message}`)
+      }
     }
 
     // If menu exists, return it

@@ -182,3 +182,4 @@ SQLite made the **database simpler**, but you still need a **backend server** to
 - Handle authentication
 
 The backend server is the **bridge** between your React app (browser) and your SQLite database (server file).
+

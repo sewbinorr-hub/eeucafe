@@ -236,3 +236,4 @@ Request → Server Running → SQLite File → Persistent Storage
 - Continuous server process
 
 **Result:** Frontend on Vercel + Backend on Railway/Render = Full working app! 🎉
+

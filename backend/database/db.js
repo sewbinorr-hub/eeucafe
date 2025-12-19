@@ -78,3 +78,4 @@ const preparedStatements = {
 }
 
 export { db, preparedStatements, DB_PATH }
+

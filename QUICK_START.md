@@ -80,3 +80,4 @@ VITE_API_URL=http://localhost:5000/api
 ## Still Having Issues?
 
 See `TROUBLESHOOTING.md` for detailed solutions.
+

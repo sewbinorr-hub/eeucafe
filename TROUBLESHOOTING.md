@@ -181,3 +181,4 @@ curl -X POST http://localhost:5000/api/admin/menu \
 2. Check browser console for frontend errors
 3. Verify all environment variables are set correctly
 4. Ensure both frontend and backend are running
+
