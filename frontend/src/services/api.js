@@ -230,7 +230,8 @@ export const uploadImage = async (file, adminKey) => {
     // Generate unique filename
     const fileExt = file.name.split('.').pop()
     const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${fileExt}`
-    const filePath = `menu-images/${fileName}`
+    // File path in bucket (no bucket name prefix needed)
+    const filePath = fileName
 
     // Upload to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabase.storage
@@ -242,6 +243,13 @@ export const uploadImage = async (file, adminKey) => {
 
     if (uploadError) {
       console.error('Upload error:', uploadError)
+      // Provide helpful error messages
+      if (uploadError.message.includes('Bucket not found')) {
+        throw new Error('Storage bucket "menu-images" not found. Please create it in Supabase dashboard.')
+      }
+      if (uploadError.message.includes('new row violates row-level security')) {
+        throw new Error('Storage policy error. Please check bucket policies in Supabase.')
+      }
       throw new Error(`Failed to upload image: ${uploadError.message}`)
     }
 
