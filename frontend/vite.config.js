@@ -16,17 +16,8 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace']
-      },
-      format: {
-        comments: false
-      }
-    },
+    minify: 'esbuild', // Use esbuild (built into Vite) instead of terser
+    // esbuild is faster and doesn't require additional dependencies
     rollupOptions: {
       output: {
         manualChunks: {
