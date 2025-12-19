@@ -26,7 +26,7 @@ export default function Admin() {
     try {
       const health = await checkHealth()
       setDbStatus({
-        connected: health.mongodb?.connected || false,
+        connected: health.database?.status === 'ok' || health.status === 'ok',
         checking: false
       })
     } catch (error) {
@@ -341,13 +341,13 @@ export default function Admin() {
                   <div className="min-w-0">
                     <h4 className="text-red-400 font-bold text-xs sm:text-sm mb-1">Database Connection Issue</h4>
                     <p className="text-gray-300 text-xs sm:text-sm leading-relaxed mb-2">
-                      Cannot connect to MongoDB. Changes cannot be saved until connection is restored.
+                      Cannot access SQLite database. Changes cannot be saved until the database is accessible.
                     </p>
                     <ul className="text-xs text-gray-400 space-y-1 list-disc list-inside">
-                      <li>Check your MongoDB Atlas connection string in backend/.env</li>
-                      <li>Verify your IP address is whitelisted in MongoDB Atlas</li>
-                      <li>Ensure your MongoDB cluster is running</li>
-                      <li>The server will automatically retry connection</li>
+                      <li>Check if the backend server is running</li>
+                      <li>Verify the database file exists at backend/data/eeu-cafe.db</li>
+                      <li>Ensure the backend has write permissions for the data directory</li>
+                      <li>Check backend server logs for detailed error messages</li>
                     </ul>
                   </div>
                 </div>

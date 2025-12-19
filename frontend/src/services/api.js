@@ -48,10 +48,11 @@ export const saveMenu = async (menu, adminKey, retryCount = 0) => {
           fullMessage += '\n\n' + details
         }
         fullMessage += '\n\nTroubleshooting:\n'
-        fullMessage += '1. Check your MongoDB Atlas connection string\n'
-        fullMessage += '2. Verify your IP address is whitelisted in MongoDB Atlas\n'
-        fullMessage += '3. Check if your MongoDB cluster is running\n'
-        fullMessage += '4. Wait a moment and try again (auto-retrying...)'
+        fullMessage += '1. Check if the backend server is running\n'
+        fullMessage += '2. Verify the SQLite database file exists at backend/data/eeu-cafe.db\n'
+        fullMessage += '3. Ensure the backend has write permissions for the data directory\n'
+        fullMessage += '4. Check backend server logs for detailed error messages\n'
+        fullMessage += '5. Wait a moment and try again (auto-retrying...)'
         throw new Error(fullMessage)
       }
       throw new Error(errorMsg)
@@ -69,7 +70,7 @@ export const checkHealth = async () => {
     const response = await api.get('/health')
     return response.data
   } catch (error) {
-    return { status: 'error', mongodb: { connected: false } }
+    return { status: 'error', database: { type: 'SQLite', status: 'error' } }
   }
 }
 
