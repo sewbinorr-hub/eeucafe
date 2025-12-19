@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { format } from 'date-fns'
+import { checkAndSendNotification } from '../services/notifications'
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [currentTime, setCurrentTime] = useState(new Date())
   const [menu, setMenu] = useState(null)
   const [loading, setLoading] = useState(true)
+  const lastNotifiedSlot = useRef(null)
 
   useEffect(() => {
     // Update time every second
@@ -86,6 +88,37 @@ export default function Home() {
 
   const currentSlot = getCurrentTimeSlot()
   const nextServing = getNextServingTime()
+
+  const getStatusText = (slot) => {
+    if (!slot) {
+      const dayOfWeek = currentTime.getDay()
+      if (dayOfWeek === 0) {
+        return '🔒 Closed (Sunday)'
+      }
+      return '⏸️ Not Currently Serving'
+    }
+    const statusMap = {
+      'morning-meal': '🍽️ Morning Meal',
+      'morning-tea': '☕ Morning Tea/Coffee',
+      'lunch-meal': '🍛 Lunch Meal',
+      'afternoon-meal': '☕ Afternoon Coffee'
+    }
+    return statusMap[slot] || '⏸️ Not Currently Serving'
+  }
+
+  const statusText = getStatusText(currentSlot)
+
+  // Check and send notifications when serving time starts
+  useEffect(() => {
+    // Only send notification when a new slot starts (not on every render)
+    if (currentSlot && currentSlot !== lastNotifiedSlot.current) {
+      checkAndSendNotification(currentSlot, statusText)
+      lastNotifiedSlot.current = currentSlot
+    } else if (!currentSlot) {
+      // Reset when no slot is active
+      lastNotifiedSlot.current = null
+    }
+  }, [currentSlot, statusText])
 
   const formatDate = (date) => {
     return format(date, 'EEEE, MMM d')

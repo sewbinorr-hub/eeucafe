@@ -66,8 +66,8 @@ export default function NotificationPermission() {
           onClick={isEnabled ? handleDisable : handleEnable}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
             isEnabled
-              ? 'bg-primary-green text-white hover:bg-primary-green/80'
-              : 'bg-[#1c2620] text-gray-400 border border-white/10 hover:border-white/20'
+              ? 'bg-primary text-background-dark hover:bg-primary/90'
+              : 'bg-surface-dark text-gray-400 border border-white/10 hover:border-white/20'
           }`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -89,7 +89,7 @@ export default function NotificationPermission() {
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50"
         >
-          <div className="bg-[#1c2620] border border-primary-green/50 rounded-2xl p-4 shadow-2xl backdrop-blur-md">
+          <div className="bg-surface-dark border border-primary/50 rounded-2xl p-4 shadow-2xl backdrop-blur-md">
             <div className="flex items-start gap-3">
               <div className="text-2xl">🔔</div>
               <div className="flex-1">
@@ -103,7 +103,7 @@ export default function NotificationPermission() {
                   <button
                     onClick={handleEnable}
                     disabled={isRequesting}
-                    className="px-4 py-2 bg-primary-green text-white rounded-lg text-xs font-medium hover:bg-primary-green/80 transition-colors disabled:opacity-50"
+                    className="px-4 py-2 bg-primary text-background-dark rounded-lg text-xs font-medium hover:bg-primary/80 transition-colors disabled:opacity-50"
                   >
                     {isRequesting ? 'Enabling...' : 'Enable Notifications'}
                   </button>
