@@ -3,7 +3,11 @@ import { motion } from 'framer-motion'
 import { format } from 'date-fns'
 import MenuCard from '../components/MenuCard'
 import { getMenu } from '../services/api'
-import { checkAndSendNotification } from '../services/notifications'
+import {
+  areNotificationsEnabled,
+  checkAndSendNotification,
+  NOTIFICATIONS_CHANGED_EVENT,
+} from '../services/notifications'
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -11,6 +15,7 @@ export default function Home() {
   const [menu, setMenu] = useState(null)
   const [loading, setLoading] = useState(true)
   const lastNotifiedSlot = useRef(null)
+  const [notificationsEnabled, setNotificationsEnabled] = useState(() => areNotificationsEnabled())
 
   useEffect(() => {
     // Update time every second
@@ -29,6 +34,18 @@ export default function Home() {
     return () => {
       clearInterval(timeInterval)
       clearInterval(dateInterval)
+    }
+  }, [])
+
+  // Keep Home in sync with the notifications toggle
+  useEffect(() => {
+    const update = () => setNotificationsEnabled(areNotificationsEnabled())
+    window.addEventListener(NOTIFICATIONS_CHANGED_EVENT, update)
+    // Catch changes from other tabs/windows
+    window.addEventListener('storage', update)
+    return () => {
+      window.removeEventListener(NOTIFICATIONS_CHANGED_EVENT, update)
+      window.removeEventListener('storage', update)
     }
   }, [])
 
@@ -187,15 +204,31 @@ export default function Home() {
 
   // Check and send notifications when serving time starts
   useEffect(() => {
-    // Only send notification when a new slot starts (not on every render)
-    if (currentSlot && currentSlot !== lastNotifiedSlot.current) {
-      checkAndSendNotification(currentSlot, statusText)
-      lastNotifiedSlot.current = currentSlot
-    } else if (!currentSlot) {
-      // Reset when no slot is active
-      lastNotifiedSlot.current = null
+    let cancelled = false
+
+    const run = async () => {
+      if (!currentSlot) {
+        lastNotifiedSlot.current = null
+        return
+      }
+
+      // Only send once per slot, but ONLY mark it as notified if we actually sent.
+      // This fixes the bug where turning notifications ON during an active slot would never notify.
+      if (currentSlot !== lastNotifiedSlot.current) {
+        const result = checkAndSendNotification(currentSlot, statusText)
+        const sent = result instanceof Promise ? await result : result
+        if (!cancelled && sent) {
+          lastNotifiedSlot.current = currentSlot
+        }
+      }
     }
-  }, [currentSlot, statusText])
+
+    run()
+
+    return () => {
+      cancelled = true
+    }
+  }, [currentSlot, statusText, notificationsEnabled])
 
   const formatTime = (date) => {
     return format(date, 'hh:mm:ss a')

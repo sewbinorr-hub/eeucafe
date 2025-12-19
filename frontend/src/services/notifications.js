@@ -2,6 +2,17 @@
 
 const NOTIFICATION_STORAGE_KEY = 'eeu-cafe-notifications-enabled'
 const NOTIFICATION_SENT_KEY = 'eeu-cafe-notification-sent-'
+export const NOTIFICATIONS_CHANGED_EVENT = 'eeu-cafe-notifications-changed'
+
+const emitNotificationsChanged = () => {
+  try {
+    // LocalStorage mutations in the same tab do NOT trigger the "storage" event.
+    // We emit a custom event so any open components (Home, etc.) can react instantly.
+    window.dispatchEvent(new Event(NOTIFICATIONS_CHANGED_EVENT))
+  } catch {
+    // no-op (non-browser environments)
+  }
+}
 
 // Check if notifications are supported
 export const isNotificationSupported = () => {
@@ -43,11 +54,13 @@ export const areNotificationsEnabled = () => {
 // Enable notifications
 export const enableNotifications = () => {
   localStorage.setItem(NOTIFICATION_STORAGE_KEY, 'true')
+  emitNotificationsChanged()
 }
 
 // Disable notifications
 export const disableNotifications = () => {
   localStorage.setItem(NOTIFICATION_STORAGE_KEY, 'false')
+  emitNotificationsChanged()
 }
 
 // Get notification status for a specific time slot
