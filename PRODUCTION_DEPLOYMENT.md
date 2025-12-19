@@ -285,3 +285,4 @@ For issues or questions, check the application logs:
 - PM2 logs: `pm2 logs eeu-cafe-backend`
 - Nginx logs: `/var/log/nginx/error.log`
 - Application logs: `./logs/` directory
+

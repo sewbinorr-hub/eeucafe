@@ -136,3 +136,4 @@ VITE_ADMIN_KEY=your-secret-admin-key-change-this
 6. ✅ Update Vercel environment variables
 7. 🎉 Done!
 
+

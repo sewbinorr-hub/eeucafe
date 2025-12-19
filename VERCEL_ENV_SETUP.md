@@ -152,3 +152,5 @@ The "Invalid admin key" error happens because:
 2. The key you enter doesn't match `VITE_ADMIN_KEY`
 
 **Fix:** Set `VITE_ADMIN_KEY` in Vercel environment variables and use the same key in the admin page.
+
+

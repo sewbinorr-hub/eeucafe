@@ -107,3 +107,5 @@ new Date().toISOString().split('T')[0]
 - ✅ Sunday shows **CLOSED** message
 - ✅ Check browser console for debugging info
 - ✅ Verify menu data exists in Supabase for today's date
+
+
