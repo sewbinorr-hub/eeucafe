@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#112117] text-white min-h-screen;
+  }
+}
+
+@layer components {
+  .card-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
+  }
+  
+  .tilt-card {
+    transition: transform 0.1s ease-out, box-shadow 0.2s ease;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+  }
+  
+  .tilt-card:hover {
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    z-index: 10;
+  }
+}
+
+

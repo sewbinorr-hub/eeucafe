@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://www.eeu.gov.et/images/logo.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00E5FF">
+    <meta name="description" content="EEU CAFE - Daily-changing cafe menus with automatic time-based detection">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Disable text selection and right-click in production -->
+    <script>
+        // Only apply in production
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            // Disable right-click
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+            document.addEventListener('keydown', function(e) {
+                if (e.keyCode === 123 || // F12
+                    (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || // Ctrl+Shift+I/J/C
+                    (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83 || e.keyCode === 80))) { // Ctrl+U/S/P
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable text selection
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+        }
+    </script>
+    <title>EEU CAFE - Live Menu</title>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <noscript>
+        <div style="text-align: center; padding: 50px; color: white; background: #112117;">
+            <h1>JavaScript Required</h1>
+            <p>Please enable JavaScript to use this application.</p>
+        </div>
+    </noscript>
+</body>
+</html>
+
+

@@ -1,0 +1,11 @@
+node_modules
+.git
+.env
+.env.local
+.env.production
+backend
+*.log
+logs
+.DS_Store
+dist
+build

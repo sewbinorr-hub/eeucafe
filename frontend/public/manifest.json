@@ -1,0 +1,35 @@
+{
+  "name": "EEU CAFE - Live Menu",
+  "short_name": "EEU CAFE",
+  "description": "Daily-changing cafe menus with automatic time-based detection",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#112117",
+  "theme_color": "#00E5FF",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://www.eeu.gov.et/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://www.eeu.gov.et/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["food", "lifestyle"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Today's Menu",
+      "short_name": "Menu",
+      "description": "View today's menu",
+      "url": "/",
+      "icons": [{ "src": "https://www.eeu.gov.et/images/logo.png", "sizes": "96x96" }]
+    }
+  ]
+}
