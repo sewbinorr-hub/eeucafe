@@ -57,8 +57,36 @@ export const getMenu = async (date) => {
     let defaultSlots = []
 
     // Sunday: Closed
-    if (dayOfWeek !== 0) {
-      // Default slots for all days (Monday-Saturday)
+    if (dayOfWeek === 0) {
+      defaultSlots = []
+    }
+    // Saturday: Half day - only morning meal and morning tea
+    else if (dayOfWeek === 6) {
+      defaultSlots = [
+        {
+          key: 'morning-meal',
+          label: '🍽️ Morning Meal',
+          time: '08:00',
+          foods: [
+            { name: 'Breakfast Items', image: '' },
+            { name: 'Toast', image: '' },
+            { name: 'Eggs', image: '' },
+          ],
+        },
+        {
+          key: 'morning-tea',
+          label: '☕ Morning Tea/Coffee',
+          time: '10:00',
+          foods: [
+            { name: 'Coffee', image: '' },
+            { name: 'Tea', image: '' },
+            { name: 'Pastries', image: '' },
+          ],
+        },
+      ]
+    }
+    // Monday-Friday: Full day schedule
+    else {
       defaultSlots = [
         {
           key: 'morning-meal',

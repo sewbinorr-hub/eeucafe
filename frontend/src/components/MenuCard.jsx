@@ -6,7 +6,7 @@ function getTimeDuration(slotKey) {
     'morning-meal': '15 min', // Morning Meal (8:00-8:15)
     'morning-tea': '15 min', // Morning Tea/Coffee (10:00-10:15)
     'lunch-meal': '1.5 hours', // Lunch Meal (12:00-13:30)
-    'afternoon-meal': '30 min', // Afternoon Coffee (15:00-15:30)
+    'afternoon-meal': '15 min', // Afternoon Coffee (15:00-15:15)
   }
   return durations[slotKey] || ''
 }

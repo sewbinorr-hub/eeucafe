@@ -50,13 +50,19 @@ export default function Admin() {
       if (dayOfWeek === 0) {
         // Sunday - closed
         defaultSlots = []
-      } else {
-        // All days (Monday-Saturday) have the same schedule
+      } else if (dayOfWeek === 6) {
+        // Saturday - half day (only morning meal and morning tea)
         defaultSlots = [
-          { key: 'morning-meal', label: '☕ Morning Tea', time: '02:00', foods: [{ name: '', image: '' }] },
-          { key: 'morning-tea', label: '🍽️ Morning Meal', time: '04:00', foods: [{ name: '', image: '' }] },
-          { key: 'afternoon-tea', label: '🍛 Afternoon Meal', time: '09:00', foods: [{ name: '', image: '' }] },
-          { key: 'afternoon-meal', label: '☕ Afternoon Tea', time: '18:00', foods: [{ name: '', image: '' }] },
+          { key: 'morning-meal', label: '🍽️ Morning Meal', time: '08:00', foods: [{ name: '', image: '' }] },
+          { key: 'morning-tea', label: '☕ Morning Tea/Coffee', time: '10:00', foods: [{ name: '', image: '' }] },
+        ]
+      } else {
+        // Monday-Friday - full day schedule
+        defaultSlots = [
+          { key: 'morning-meal', label: '🍽️ Morning Meal', time: '08:00', foods: [{ name: '', image: '' }] },
+          { key: 'morning-tea', label: '☕ Morning Tea/Coffee', time: '10:00', foods: [{ name: '', image: '' }] },
+          { key: 'lunch-meal', label: '🍛 Lunch Meal', time: '12:00', foods: [{ name: '', image: '' }] },
+          { key: 'afternoon-meal', label: '☕ Afternoon Coffee', time: '15:00', foods: [{ name: '', image: '' }] },
         ]
       }
       

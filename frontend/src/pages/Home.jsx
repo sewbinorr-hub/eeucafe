@@ -55,7 +55,21 @@ export default function Home() {
       return null
     }
 
-    // All days (Monday-Saturday) have the same schedule:
+    // Saturday is half day - only morning meal and morning tea, closes at 12:00 PM
+    if (dayOfWeek === 6) {
+      // Morning Meal: 8:00 AM - 8:15 AM (15 minutes)
+      if (currentTimeMinutes >= 8 * 60 && currentTimeMinutes < 8 * 60 + 15) {
+        return 'morning-meal'
+      }
+      // Morning Tea/Coffee: 10:00 AM - 10:15 AM (15 minutes)
+      else if (currentTimeMinutes >= 10 * 60 && currentTimeMinutes < 10 * 60 + 15) {
+        return 'morning-tea'
+      }
+      // Closed after 12:00 PM on Saturday
+      return null
+    }
+
+    // Monday-Friday schedule:
     // Morning Meal: 8:00 AM - 8:15 AM (15 minutes)
     if (currentTimeMinutes >= 8 * 60 && currentTimeMinutes < 8 * 60 + 15) {
       return 'morning-meal'
@@ -68,8 +82,8 @@ export default function Home() {
     else if (currentTimeMinutes >= 12 * 60 && currentTimeMinutes < 13 * 60 + 30) {
       return 'lunch-meal'
     }
-    // Afternoon Coffee: 3:00 PM - 3:30 PM (30 minutes)
-    else if (currentTimeMinutes >= 15 * 60 && currentTimeMinutes < 15 * 60 + 30) {
+    // Afternoon Coffee: 3:00 PM - 3:15 PM (15 minutes)
+    else if (currentTimeMinutes >= 15 * 60 && currentTimeMinutes < 15 * 60 + 15) {
       return 'afternoon-meal'
     }
 
@@ -80,8 +94,16 @@ export default function Home() {
   const getStatusText = (slot) => {
     if (!slot) {
       const dayOfWeek = currentTime.getDay()
+      const hours = currentTime.getHours()
+      const minutes = currentTime.getMinutes()
+      const currentTimeMinutes = hours * 60 + minutes
+      
       if (dayOfWeek === 0) {
         return '🔒 Closed (Sunday)'
+      }
+      // Saturday - closed after 12:00 PM
+      if (dayOfWeek === 6 && currentTimeMinutes >= 12 * 60) {
+        return '🔒 Closed (Saturday - Half Day)'
       }
       return '⏸️ Not Currently Serving'
     }
@@ -105,7 +127,21 @@ export default function Home() {
       return 'Monday 8:00 AM (Morning Meal)'
     }
 
-    // All days have the same schedule
+    // Saturday is half day - only morning meal and morning tea
+    if (dayOfWeek === 6) {
+      if (currentTimeMinutes < 8 * 60) {
+        return '8:00 AM (Morning Meal)'
+      } else if (currentTimeMinutes >= 8 * 60 + 15 && currentTimeMinutes < 10 * 60) {
+        return '10:00 AM (Morning Tea/Coffee)'
+      } else if (currentTimeMinutes >= 10 * 60 + 15 && currentTimeMinutes < 12 * 60) {
+        return 'Closed at 12:00 PM (Half Day)'
+      } else {
+        // After 12:00 PM on Saturday
+        return 'Monday 8:00 AM (Morning Meal)'
+      }
+    }
+
+    // Monday-Friday schedule
     if (currentTimeMinutes < 8 * 60) {
       return '8:00 AM (Morning Meal)'
     } else if (currentTimeMinutes >= 8 * 60 + 15 && currentTimeMinutes < 10 * 60) {
@@ -114,8 +150,8 @@ export default function Home() {
       return '12:00 PM (Lunch Meal)'
     } else if (currentTimeMinutes >= 13 * 60 + 30 && currentTimeMinutes < 15 * 60) {
       return '3:00 PM (Afternoon Coffee)'
-    } else if (currentTimeMinutes >= 15 * 60 + 30) {
-      const nextDay = dayOfWeek === 6 ? 'Monday' : 'Tomorrow'
+    } else if (currentTimeMinutes >= 15 * 60 + 15) {
+      const nextDay = dayOfWeek === 5 ? 'Monday' : 'Tomorrow'
       return `${nextDay} 8:00 AM (Morning Meal)`
     }
     return null
@@ -249,18 +285,88 @@ export default function Home() {
             const currentSlotData = menu.slots.find(slot => slot.key === currentSlot)
             
             if (!currentSlotData) {
+              // Beautiful card for "not currently serving" state
               return (
-                <div className="text-center py-12">
-                  <p className="text-gray-400 text-lg">
-                    {currentSlot 
-                      ? 'Menu item not found for current time slot.' 
-                      : 'No meal is currently being served.'}
-                  </p>
-                  {!currentSlot && nextServing && (
-                    <p className="text-gray-500 text-sm mt-2">
-                      Next serving: <span className="text-primary-green">{nextServing}</span>
-                    </p>
-                  )}
+                <div className="flex justify-center">
+                  <div className="w-full max-w-md">
+                    <motion.div
+                      className="relative group"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1, duration: 0.5 }}
+                    >
+                      {/* Glow effect */}
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-gray-600/20 via-gray-500/20 to-gray-600/20 rounded-[1.2rem] opacity-50 blur-sm group-hover:opacity-75 transition duration-500"></div>
+                      
+                      <div className="relative flex flex-col bg-[#1c2620] border border-white/10 rounded-2xl p-8 shadow-xl overflow-hidden">
+                        {/* Background pattern */}
+                        <div className="absolute inset-0 opacity-5">
+                          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_50%)]"></div>
+                        </div>
+                        
+                        <div className="relative z-10 flex flex-col items-center text-center">
+                          {/* Icon */}
+                          <motion.div
+                            className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-700/50 to-gray-800/50 border border-white/10 flex items-center justify-center mb-6"
+                            animate={{ 
+                              scale: [1, 1.05, 1],
+                              opacity: [0.7, 0.9, 0.7]
+                            }}
+                            transition={{ 
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          >
+                            <span className="text-4xl">⏸️</span>
+                          </motion.div>
+                          
+                          {/* Status Badge */}
+                          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800/50 border border-white/10 text-gray-300 mb-4">
+                            <span className="w-2 h-2 rounded-full bg-gray-500"></span>
+                            <span className="text-xs font-bold uppercase tracking-wider">Not Currently Serving</span>
+                          </div>
+                          
+                          {/* Status Text */}
+                          <h3 className="text-2xl font-bold text-white mb-2">
+                            {statusText}
+                          </h3>
+                          
+                          {/* Description */}
+                          <p className="text-gray-400 text-sm mb-6 max-w-sm">
+                            {currentSlot 
+                              ? 'Menu item not found for current time slot.' 
+                              : 'We are currently closed. Please check back during our serving hours.'}
+                          </p>
+                          
+                          {/* Next Serving Time */}
+                          {nextServing && (
+                            <motion.div
+                              className="w-full p-4 rounded-xl bg-gradient-to-r from-primary-green/10 via-accent-orange/10 to-primary-green/10 border border-primary-green/20"
+                              initial={{ opacity: 0, scale: 0.95 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: 0.3 }}
+                            >
+                              <div className="flex items-center justify-center gap-2 mb-2">
+                                <span className="text-primary-green text-lg">⏰</span>
+                                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Next Serving</span>
+                              </div>
+                              <p className="text-lg font-bold text-primary-green">
+                                {nextServing}
+                              </p>
+                            </motion.div>
+                          )}
+                          
+                          {/* Decorative elements */}
+                          <div className="mt-6 flex gap-2">
+                            <div className="w-1 h-1 rounded-full bg-gray-600"></div>
+                            <div className="w-1 h-1 rounded-full bg-gray-600"></div>
+                            <div className="w-1 h-1 rounded-full bg-gray-600"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
                 </div>
               )
             }
@@ -283,8 +389,26 @@ export default function Home() {
             )
           })()
         ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-400">No menu available for today.</p>
+          <div className="flex justify-center">
+            <div className="w-full max-w-md">
+              <motion.div
+                className="relative group"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.5 }}
+              >
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-gray-600/20 via-gray-500/20 to-gray-600/20 rounded-[1.2rem] opacity-50 blur-sm"></div>
+                <div className="relative flex flex-col bg-[#1c2620] border border-white/10 rounded-2xl p-8 shadow-xl">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-16 h-16 rounded-full bg-gray-800/50 border border-white/10 flex items-center justify-center mb-4">
+                      <span className="text-3xl">📋</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">No Menu Available</h3>
+                    <p className="text-gray-400 text-sm">Menu data is not available for today.</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
         )}
         </div>
@@ -315,7 +439,7 @@ function isSlotPast(slot, currentTime) {
     'morning-meal': 15, // Morning Meal: 15 minutes (8:00-8:15)
     'morning-tea': 15, // Morning Tea/Coffee: 15 minutes (10:00-10:15)
     'lunch-meal': 90, // Lunch Meal: 90 minutes (12:00-13:30)
-    'afternoon-meal': 30, // Afternoon Coffee: 30 minutes (15:00-15:30)
+    'afternoon-meal': 15, // Afternoon Coffee: 15 minutes (15:00-15:15)
   }
   
   const duration = slotDurations[slot.key] || 15
