@@ -1,6 +1,6 @@
 // Service Worker for EEU CAFE - Handles background notifications
 
-const CACHE_NAME = 'eeu-cafe-v1'
+const CACHE_NAME = 'eeu-cafe-v2'
 const urlsToCache = [
   '/',
   '/index.html',
@@ -37,7 +37,17 @@ self.addEventListener('activate', (event) => {
 })
 
 // Fetch event - serve from cache, fallback to network
+// Don't cache API requests - always fetch fresh
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url)
+  
+  // Don't cache API requests or localhost requests
+  if (url.pathname.startsWith('/api/') || url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+    event.respondWith(fetch(event.request))
+    return
+  }
+  
+  // For other requests, try cache first, then network
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
